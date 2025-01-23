@@ -1,0 +1,28 @@
+$ python main.py 
+Python-dotenv could not parse statement starting at line 2 
+{
+	'choices': 
+		[
+			{
+				'message': 
+					{
+						'content': 
+							'Я могу помочь с множеством задач! Вот неск олько примеров того, что я умею:\n\n1.
+							**Ответы на вопросы**: Я могу ответить на вопросы по различным темам, будь то наука, история, культура или что-то другое.\n\n2.
+							**Анализ текста**: Я могу анализировать тексты, помогать с их редактирова нием, улучшением и даже генерировать новые тексты на основе предоставленного мат ериала.\n\n3.',
+						'role': 'assistant'
+					}, 
+				'index': 0, 
+				'finish_reason': 'length'
+			}
+		],
+	'created': 1737661941,
+	'model': 'GigaChat:1.0.26.20', 
+	'object': 'chat.completion', 
+	'usage': 
+		{
+			'prompt_tokens': 17,
+			'completion_tokens': 100,
+			'total_tokens': 117
+		}
+}
