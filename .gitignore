@@ -170,7 +170,7 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
+chain.pem
 .project
 .pydevproject
 secret.txt
