@@ -171,7 +171,7 @@ cython_debug/
 .pypirc
 
 
-chain.pem
 .project
 .pydevproject
 secret.txt
+

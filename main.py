@@ -71,4 +71,4 @@ def get_models():
 #print(get_answer('Расскажи что ты умеешь', os.getenv('access_token')))
 #print(os.getenv('access_token'))
 
-print(get_token())
+print()
