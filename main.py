@@ -17,7 +17,7 @@ logging.basicConfig(
 baseUrl = 'https://gigachat.devices.sberbank.ru/api/v1'
 
 def get_token():
-    url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
+    url_authorization = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 
     payload='scope=GIGACHAT_API_PERS'
     headers = {
@@ -27,7 +27,7 @@ def get_token():
         'Authorization': f'Basic {os.getenv("AUTHORIZATION_KEY")}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload, verify='chain.pem')
+    response = requests.request("POST", url_authorization, headers=headers, data=payload, verify='chain.pem')
 
     return response.json()
 
@@ -97,7 +97,7 @@ def save_token(response):
         access_token = response_get_token['access_token']
         time_expiration_token = str(response_get_token['expires_at'])[:-3]
         
-        logging.info(f'Токен аторизации получен: {access_token[:20]}')
+        logging.info(f'Токен аторизации получен: {access_token[:20]}...')
         logging.info(f'Время окончания действия токена:{time_expiration_token}')
         
         with open('cache.txt', 'w') as file_cache:
@@ -111,10 +111,53 @@ def save_token(response):
         logging.error(f'Не удалось получить токен авторизации: {error}')
         raise error
     
+
+def get_count_tokens(access_token):
+    url = "https://gigachat.devices.sberbank.ru/api/v1/tokens/count"
+
+    payload = json.dumps({
+      "model": "GigaChat",
+      "input": [
+        "Расскажи что ты умеешь"
+      ]
+    })
+    headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': f'Bearer {access_token}'
+    }
     
+    response = requests.request(
+        'POST',
+        url,
+        headers=headers,
+        data=payload,
+        verify='chain.pem'
+    )
+    
+    print(response.text)
 
+def get_balance(access_token):
 
-print(get_models(save_token(get_token())))
+    url = "https://gigachat.devices.sberbank.ru/api/v1/balance"
+    
+    payload={}
+    headers = {
+      'Accept': 'application/json',
+      'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.request(
+        'GET',
+        url,
+        headers=headers,
+        data=payload,
+        verify='chain.pem'
+    )
+    return response.json()
+
+print(get_count_tokens(save_token(get_token())))
+#print(get_models(save_token(get_token())))
 #print(int(datetime.now().timestamp()))
 
 #1737709137411
