@@ -1,10 +1,17 @@
 import os
 import json
+import logging
 
 import requests
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
 #url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 baseUrl = 'https://gigachat.devices.sberbank.ru/api/v1'
@@ -51,18 +58,24 @@ def get_answer(text, access_token):
 
     return response.json()
 
-def get_models():
+def get_models(access_token):
     url = f'{baseUrl}/models'
+    url = 'https://gigachat.devices.sberbank.ru/api/v1/models'
     
     payload = {}
     
     headers = {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': f'Bearer {access_token}' #токен доступа
     }
     
-    response = requests.request("POST", url, headers=headers, data=payload, verify='chain.pem')
+    response = requests.request(
+        "GET",
+        url,
+        headers=headers,
+        data=payload,
+        verify='chain.pem'
+    )
 
     return response.json()
 
@@ -70,5 +83,40 @@ def get_models():
 
 #print(get_answer('Расскажи что ты умеешь', os.getenv('access_token')))
 #print(os.getenv('access_token'))
+def save_token(response):
+    #file_cache = open('cache.txt')
+    with open('cache.txt') as file_cache:
+        # Конвертация в Unix-таймштамп
+        datetime_now_to_unix = int(datetime.now().timestamp())
+        datetime_cache_to_unix = file_cache.readline()
+        if datetime_cache_to_unix != '' and (int(datetime_cache_to_unix) > datetime_now_to_unix):
+            logging.info(f'Берем токен аторизации из кеша')
+            return file_cache.readline()
+    try:
+        response_get_token = get_token()
+        access_token = response_get_token['access_token']
+        time_expiration_token = str(response_get_token['expires_at'])[:-3]
+        
+        logging.info(f'Токен аторизации получен: {access_token[:20]}')
+        logging.info(f'Время окончания действия токена:{time_expiration_token}')
+        
+        with open('cache.txt', 'w') as file_cache:
+            file_cache.write(f'{time_expiration_token}\n{access_token}')
+            
+        logging.info('Записали токен и время его действия в кеш')
 
-print()
+        return access_token
+
+    except Exception as error:
+        logging.error(f'Не удалось получить токен авторизации: {error}')
+        raise error
+    
+    
+
+
+print(get_models(save_token(get_token())))
+#print(int(datetime.now().timestamp()))
+
+#1737709137411
+
+#1737710185.588596
